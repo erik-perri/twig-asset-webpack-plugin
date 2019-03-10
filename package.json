@@ -1,0 +1,72 @@
+{
+  "name": "twig-asset-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Webpack plugin to add assets referenced in twig files to the compilation as additional assets.",
+  "author": "Erik Perri",
+  "license": "MIT",
+  "main": "dist/twig-asset-webpack-plugin.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "build": "babel src --out-dir dist",
+    "build-production": "cross-env BABEL_ENV=production npm run build",
+    "clean": "del-cli dist",
+    "prepare": "npm run clean && npm run build-production"
+  },
+  "engines": {
+    "node": ">= 8.9.0"
+  },
+  "dependencies": {
+    "loader-utils": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.4",
+    "babel-preset-minify": "^0.5.0",
+    "cross-env": "^5.2.0",
+    "del-cli": "^1.1.0",
+    "jest": "^24.1.0",
+    "memory-fs": "^0.4.1",
+    "webpack": "^4.29.6",
+    "webpack-manifest-plugin": "^2.0.4"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erik-perri/twig-asset-webpack-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/erik-perri/twig-asset-webpack-plugin/issues"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "babel": {
+    "env": {
+      "development": {
+        "presets": [
+          "@babel/env"
+        ]
+      },
+      "production": {
+        "presets": [
+          "@babel/env",
+          "minify"
+        ]
+      }
+    }
+  },
+  "eslintConfig": {
+    "extends": "airbnb",
+    "env": {
+      "jest/globals": true
+    },
+    "plugins": [
+      "jest"
+    ]
+  }
+}
