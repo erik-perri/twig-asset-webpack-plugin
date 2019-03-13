@@ -121,12 +121,14 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(stats.hasErrors()).toBe(false);
 
     expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.png'))).toBe(true);
     expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.png'))).toBe(true);
 
     expect(manifest).toBeDefined();
     expect(manifest).toEqual({
       'main.js': 'main.js',
       'assets/100.png': 'assets/100.png',
+      'assets/sub/deeper/deepest/100.png': 'assets/sub/deeper/deepest/100.png',
       'assets/120.png': 'assets/120.png',
     });
   }));
@@ -182,12 +184,14 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(stats.hasErrors()).toBe(false);
 
     expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.5c424bc3.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.5c424bc3.png'))).toBe(true);
     expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.ad9ea438.png'))).toBe(true);
 
     expect(manifest).toBeDefined();
     expect(manifest).toEqual({
       'main.js': 'main.590d7fa4.js',
       'assets/100.png': 'assets/100.5c424bc3.png',
+      'assets/sub/deeper/deepest/100.png': 'assets/sub/deeper/deepest/100.5c424bc3.png',
       'assets/120.png': 'assets/120.ad9ea438.png',
     });
   }));
