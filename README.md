@@ -1,4 +1,4 @@
-# Twig Asset Webpack Plugin
+# Twig Asset Webpack Plugin [![Build Status](https://travis-ci.org/erik-perri/twig-asset-webpack-plugin.svg?branch=master)](https://travis-ci.org/erik-perri/twig-asset-webpack-plugin)
 
 Webpack plugin to add assets referenced in twig files to the compilation as additional assets so they are included in the generated manifest and available when Twig attempts to find them.
 
