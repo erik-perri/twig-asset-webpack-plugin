@@ -1,6 +1,6 @@
 {
   "name": "twig-asset-webpack-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Webpack plugin to add assets referenced in twig files to the compilation as additional assets.",
   "author": "Erik Perri",
   "license": "MIT",
