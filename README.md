@@ -66,20 +66,20 @@ Default: `['js', 'css']`
 The asset types to ignore when parsing the twig file.
 
 
-### `options.twigFileRegex`
-
-Type: `RegExp`
-Default: `/\.html\.twig$/`
-
-The regex to match against the template filenames.
-
-
 ### `options.excludedFromSearch`
 
 Type: `RegExp[]`
 Default: `[ /node_modules/ ]`
 
 The file or directory names that should not be searched.
+
+
+### `options.twigFileRegex`
+
+Type: `RegExp`
+Default: `/\.html\.twig$/`
+
+The regex to match against the template filenames.
 
 
 ### `options.assetNameRegExp`
