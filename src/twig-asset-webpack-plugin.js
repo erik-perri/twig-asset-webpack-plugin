@@ -29,9 +29,9 @@ class TwigAssetWebpackPlugin {
 
   additionalAssets(compilation, callback) {
     const alreadyHandledAssets = {};
-    const { templatePath, twigFileRegex } = this.options;
+    const { templatePath } = this.options;
 
-    this.findTwigFiles(templatePath, twigFileRegex).forEach((twigFile) => {
+    this.findTwigFiles(templatePath).forEach((twigFile) => {
       let twigFileContent = null;
       try {
         twigFileContent = fs.readFileSync(twigFile, 'utf8');
@@ -70,7 +70,7 @@ class TwigAssetWebpackPlugin {
     callback();
   }
 
-  findTwigFiles(searchPath, fileRegex, foundPreviously = []) {
+  findTwigFiles(searchPath, foundPreviously = []) {
     let foundFiles = [...foundPreviously];
 
     fs.readdirSync(searchPath).forEach((foundNode) => {
@@ -78,8 +78,8 @@ class TwigAssetWebpackPlugin {
       const foundNodeStats = fs.statSync(foundNodePath);
 
       if (foundNodeStats.isDirectory()) {
-        foundFiles = this.findTwigFiles(foundNodePath, fileRegex, foundFiles);
-      } else if (!fileRegex || fileRegex.test(foundNodePath)) {
+        foundFiles = this.findTwigFiles(foundNodePath, foundFiles);
+      } else if (!this.options.twigFileRegex || this.options.twigFileRegex.test(foundNodePath)) {
         foundFiles = [...foundFiles, foundNodePath];
       }
     });
