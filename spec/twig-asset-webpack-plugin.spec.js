@@ -195,4 +195,28 @@ describe('TwigAssetWebpackPlugin', () => {
       'assets/120.png': 'assets/120.ad9ea438.png',
     });
   }));
+
+  it('excludes files properly', () => webpackCompile({
+    output: {
+      path: OUTPUT_PATH,
+      filename: '[name].[hash:8].js',
+    },
+  }, {
+    assetPath: path.join(FIXTURE_PATH),
+    templatePath: path.join(FIXTURE_PATH, './sub-directory'),
+    excludedFromSearch: [/deeper/],
+  }, ({ stats, filesystem, manifest }) => {
+    expect(stats).toBeDefined();
+    expect(stats.hasErrors()).toBe(false);
+
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.5c424bc3.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.5c424bc3.png'))).toBe(false);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.ad9ea438.png'))).toBe(false);
+
+    expect(manifest).toBeDefined();
+    expect(manifest).toEqual({
+      'main.js': 'main.590d7fa4.js',
+      'assets/100.png': 'assets/100.5c424bc3.png',
+    });
+  }));
 });
