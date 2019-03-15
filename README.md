@@ -74,7 +74,7 @@ Default: `/\.html\.twig$/`
 The regex to match against the template filenames.
 
 
-### `options.twigSearchExcluded`
+### `options.excludedFromSearch`
 
 Type: `RegExp[]`
 Default: `[ /node_modules/ ]`

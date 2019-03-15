@@ -9,10 +9,10 @@ class TwigAssetWebpackPlugin {
       templatePath: false,
       filename: false,
       excludedAssetTypes: ['js', 'css'],
-      twigFileRegex: /\.html\.twig$/,
-      twigSearchExcluded: [
+      excludedFromSearch: [
         /node_modules/,
       ],
+      twigFileRegex: /\.html\.twig$/,
       /**
        * (['"])     Match the start of the quote
        * ((?!\1).+) Match anything that isn't the matched quote character
@@ -83,7 +83,7 @@ class TwigAssetWebpackPlugin {
     let foundFiles = [...foundPreviously];
 
     fs.readdirSync(searchPath).forEach((foundNode) => {
-      if (this.options.twigSearchExcluded.filter(regex => regex.test(foundNode)).length) {
+      if (this.options.excludedFromSearch.filter(regex => regex.test(foundNode)).length) {
         return;
       }
 
