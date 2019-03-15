@@ -74,6 +74,30 @@ Default: `/\.html\.twig$/`
 The regex to match against the template filenames.
 
 
+### `options.twigSearchExcluded`
+
+Type: `RegExp[]`
+Default: `[ /node_modules/ ]`
+
+The file or directory names that should not be searched.
+
+
+### `options.assetNameRegExp`
+
+Type: `RegExp`
+Default: `/asset\((['"])((?!\1).+)\1\)/g`
+
+The regex to use searching for assets in twig files.
+
+
+### `options.assetNameRegExpMatch`
+
+Type: `Number`
+Default: `2`
+
+The index to pull the file name from the `assetNameRegExp` match.
+
+
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
