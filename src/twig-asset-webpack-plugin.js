@@ -10,6 +10,12 @@ class TwigAssetWebpackPlugin {
       filename: false,
       excludedAssetTypes: ['js', 'css'],
       twigFileRegex: /\.html\.twig$/,
+      /**
+       * (['"])     Match the start of the quote
+       * ((?!\1).+) Match anything that isn't the matched quote character
+       */
+      assetNameRegExp: /asset\((['"])((?!\1).+)\1\)/g,
+      assetNameRegExpMatch: 2,
     }, options);
   }
 
@@ -42,7 +48,7 @@ class TwigAssetWebpackPlugin {
         return;
       }
 
-      TwigAssetWebpackPlugin.findAssetsInContent(twigFileContent).forEach((reqPath) => {
+      this.findAssetsInContent(twigFileContent).forEach((reqPath) => {
         if (this.options.excludedAssetTypes.includes(reqPath.split('.').pop())) {
           return;
         }
@@ -124,19 +130,14 @@ class TwigAssetWebpackPlugin {
     }, interpolatedFileName);
   }
 
-  static findAssetsInContent(content) {
+  findAssetsInContent(content) {
     const assets = [];
-    /**
-     * (['"])     Match the start of the quote
-     * ((?!\1).+) Match anything that isn't the matched quote character
-     */
-    const regex = /asset\((['"])((?!\1).+)\1\)/g;
     let match;
 
     do {
-      match = regex.exec(content);
+      match = this.options.assetNameRegExp.exec(content);
       if (match) {
-        assets.push(match[2]);
+        assets.push(match[this.options.assetNameRegExpMatch]);
       }
     } while (match);
 
