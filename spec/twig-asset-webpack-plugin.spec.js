@@ -162,12 +162,12 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(stats).toBeDefined();
     expect(stats.hasErrors()).toBe(false);
 
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './100.5c424bc3.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './100.871a649c.png'))).toBe(true);
 
     expect(manifest).toBeDefined();
     expect(manifest).toEqual({
       'main.js': 'main.590d7fa4.js',
-      '100.png': '100.5c424bc3.png',
+      '100.png': '100.871a649c.png',
     });
   }));
 
@@ -183,16 +183,16 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(stats).toBeDefined();
     expect(stats.hasErrors()).toBe(false);
 
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.5c424bc3.png'))).toBe(true);
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.5c424bc3.png'))).toBe(true);
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.ad9ea438.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.871a649c.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.871a649c.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.09921e10.png'))).toBe(true);
 
     expect(manifest).toBeDefined();
     expect(manifest).toEqual({
       'main.js': 'main.590d7fa4.js',
-      'assets/100.png': 'assets/100.5c424bc3.png',
-      'assets/sub/deeper/deepest/100.png': 'assets/sub/deeper/deepest/100.5c424bc3.png',
-      'assets/120.png': 'assets/120.ad9ea438.png',
+      'assets/100.png': 'assets/100.871a649c.png',
+      'assets/sub/deeper/deepest/100.png': 'assets/sub/deeper/deepest/100.871a649c.png',
+      'assets/120.png': 'assets/120.09921e10.png',
     });
   }));
 
@@ -209,14 +209,14 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(stats).toBeDefined();
     expect(stats.hasErrors()).toBe(false);
 
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.5c424bc3.png'))).toBe(true);
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.5c424bc3.png'))).toBe(false);
-    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.ad9ea438.png'))).toBe(false);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/100.871a649c.png'))).toBe(true);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/sub/deeper/deepest/100.871a649c.png'))).toBe(false);
+    expect(filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.09921e10.png'))).toBe(false);
 
     expect(manifest).toBeDefined();
     expect(manifest).toEqual({
       'main.js': 'main.590d7fa4.js',
-      'assets/100.png': 'assets/100.5c424bc3.png',
+      'assets/100.png': 'assets/100.871a649c.png',
     });
   }));
 });
