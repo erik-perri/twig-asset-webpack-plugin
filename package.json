@@ -16,19 +16,19 @@
     "node": ">= 8.9.0"
   },
   "dependencies": {
-    "loader-utils": "^1.0.0"
+    "loader-utils": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.11.6",
-    "@babel/core": "^7.11.6",
-    "@babel/polyfill": "^7.11.5",
-    "@babel/preset-env": "^7.11.5",
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.7",
     "babel-preset-minify": "^0.5.1",
     "cross-env": "^7.0.2",
     "del-cli": "^3.0.1",
-    "jest": "^25.4.0",
+    "jest": "^26.6.3",
     "memory-fs": "^0.5.0",
-    "webpack": "^4.44.1",
+    "webpack": "^4.44.2",
     "webpack-manifest-plugin": "^2.2.0"
   },
   "files": [
