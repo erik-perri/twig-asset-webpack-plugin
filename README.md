@@ -12,6 +12,12 @@ JS and CSS files are excluded by default since additional assets are not process
 npm install --save-dev twig-asset-webpack-plugin
 ```
 
+or
+
+```bash
+yarn add --dev twig-asset-webpack-plugin
+```
+
 
 ## Usage
 
@@ -32,6 +38,27 @@ module.exports = {
 ```
 When webpack compiles it will now scan `templatePath` for twig files matching `twigFileRegex`.  For each file found it will look for asset includes to add as additional webpack assets.
 
+## Usage with Symfony Encore
+
+In your `webpack.config.js`
+
+```javascript
+var TwigAssetWebpackPlugin = require('twig-asset-webpack-plugin');
+
+Encore
+    // ...
+    // We need to remove the default build prefix from the manifest or when
+    // twig attempts to load the asset it will not find it.
+    .setManifestKeyPrefix('')
+    // ...
+    .addPlugin(
+        new TwigAssetWebpackPlugin({
+            assetPath: path.resolve(__dirname, './assets'),
+            templatePath: path.resolve(__dirname, './templates'),
+        })
+    )
+;
+```
 
 ## API:
 
