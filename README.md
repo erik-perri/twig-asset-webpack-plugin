@@ -47,8 +47,8 @@ var TwigAssetWebpackPlugin = require('twig-asset-webpack-plugin');
 
 Encore
     // ...
-    // We need to remove the default build prefix from the manifest or when
-    // twig attempts to load the asset it will not find it.
+    // We need to remove the default build prefix from the manifest or
+    // when twig attempts to load the asset it will not find it.
     .setManifestKeyPrefix('')
     // ...
     .addPlugin(
