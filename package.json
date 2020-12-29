@@ -7,10 +7,12 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
+    "lint": "eslint src/**/*",
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rimraf dist",
-    "prepare": "npm run clean && npm run build"
+    "prepare": "npm run clean && npm run build",
+    "preversion": "npm run prepare && npm run lint && npm run test"
   },
   "engines": {
     "node": ">= 8.9.0"
