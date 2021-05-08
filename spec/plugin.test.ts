@@ -161,8 +161,12 @@ describe('TwigAssetWebpackPlugin', () => {
   });
 
   test('excludes string entry points', async () => {
+    // When an entry point is just a string, webpack will use the module name
+    // as the entry point file (main being the default), that should be
+    // excluded.
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
+      entry: path.join(FIXTURE_PATH, './index.js'),
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
@@ -185,8 +189,15 @@ describe('TwigAssetWebpackPlugin', () => {
   });
 
   test('excludes string array entry points', async () => {
+    // When an entry point is an array of string, webpack will use the module
+    // name as the entry point file (main being the default), that should be
+    // excluded.
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
+      entry: [
+        path.join(FIXTURE_PATH, './index.js'),
+        path.join(FIXTURE_PATH, './another.js'),
+      ],
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
@@ -197,10 +208,6 @@ describe('TwigAssetWebpackPlugin', () => {
             },
           },
         }),
-      ],
-      entry: [
-        path.join(FIXTURE_PATH, './index.js'),
-        path.join(FIXTURE_PATH, './another.js'),
       ],
     });
 
@@ -213,6 +220,8 @@ describe('TwigAssetWebpackPlugin', () => {
   });
 
   test('excludes object entry points', async () => {
+    // When an entry point is an object, webpack will use the key as the entry
+    // point file, they should be excluded.
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
@@ -368,9 +377,6 @@ describe('TwigAssetWebpackPlugin', () => {
           filename: '[name].[hash:8].[ext]',
         }),
       ],
-      output: {
-        path: OUTPUT_PATH,
-      },
     });
 
     expect(
