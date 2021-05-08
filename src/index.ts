@@ -1,4 +1,3 @@
-import { Plugin } from 'webpack';
 import { TwigAssetWebpackPlugin, TwigAssetWebpackPluginConfig } from './plugin';
 import { AssetLocator, AssetLocatorConfig } from './asset-locator';
 import fs from 'fs';
@@ -14,9 +13,7 @@ interface TwigAssetWebpackPluginBcConfig {
   assetNameRegExpMatch?: number;
 }
 
-class TwigAssetWebpackPluginBcWrapper
-  extends TwigAssetWebpackPlugin
-  implements Plugin {
+class TwigAssetWebpackPluginBcWrapper extends TwigAssetWebpackPlugin {
   public constructor(config: TwigAssetWebpackPluginBcConfig) {
     super(TwigAssetWebpackPluginBcWrapper.buildModernConfig(config));
   }

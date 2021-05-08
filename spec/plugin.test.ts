@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import webpack from 'webpack';
 import MemoryFileSystem from 'memory-fs';
-import WebpackManifestPlugin from 'webpack-manifest-plugin';
+import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import { TwigAssetWebpackPlugin } from '../src/plugin';
 import { AssetLocator } from '../src/asset-locator';
@@ -18,6 +18,7 @@ describe('TwigAssetWebpackPlugin', () => {
     context: __dirname,
     entry: path.join(FIXTURE_PATH, './index.js'),
     output: {
+      publicPath: '',
       path: OUTPUT_PATH,
     },
   };
@@ -25,12 +26,13 @@ describe('TwigAssetWebpackPlugin', () => {
   function webpackCompile(
     webpackOptions: webpack.Configuration
   ): Promise<{
-    stats: webpack.Stats;
+    stats: webpack.Stats | undefined;
     filesystem: MemoryFileSystem;
   }> {
     const compiler = webpack(webpackOptions);
     const filesystem = new MemoryFileSystem();
 
+    // @ts-ignore
     compiler.outputFileSystem = filesystem;
 
     return new Promise((resolve, reject) => {
@@ -88,12 +90,13 @@ describe('TwigAssetWebpackPlugin', () => {
         }),
       ],
       output: {
+        publicPath: '',
         path: OUTPUT_PATH,
         filename: '[name].js',
       },
     });
 
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       '100.png': '100.png',
       '120.png': '120.png',
@@ -117,12 +120,13 @@ describe('TwigAssetWebpackPlugin', () => {
         }),
       ],
       output: {
+        publicPath: '',
         path: OUTPUT_PATH,
         filename: '[name].js',
       },
     });
 
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       '100.png': '100.png',
@@ -145,8 +149,8 @@ describe('TwigAssetWebpackPlugin', () => {
       ],
     });
 
-    expect(stats.compilation.errors).toHaveLength(1);
-    expect(stats.compilation.errors[0].toString()).toContain(
+    expect(stats?.compilation.errors).toHaveLength(1);
+    expect(stats?.compilation.errors[0].toString()).toContain(
       'File "101.png" not found at '
     );
 
@@ -182,7 +186,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js does not exist in the asset path, we will receive an error
     // if the plugin attempted to process it
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
     });
@@ -213,7 +217,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js does not exist in the asset path, we will receive an error
     // if the plugin attempted to process it
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
     });
@@ -243,7 +247,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js and another.js do not exist in the asset path, we will
     // receive an error if the plugin attempted to process them
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       'another.js': 'another.js',
@@ -274,7 +278,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js and another.js do not exist in the asset path, we will
     // receive an error if the plugin attempted to process them
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       'another.js': 'another.js',
@@ -289,12 +293,13 @@ describe('TwigAssetWebpackPlugin', () => {
         another: path.join(FIXTURE_PATH, './index-with-css.js'),
       },
       output: {
+        publicPath: '',
         path: OUTPUT_PATH,
-        filename: '[name].[hash:8].js',
+        filename: '[name].[contenthash:8].js',
       },
       plugins: [
         new MiniCssExtractPlugin({
-          filename: '[name].[hash:8].css',
+          filename: '[name].[contenthash:8].css',
         }),
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
@@ -324,12 +329,12 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since none of the js/css references exist in the asset path, we will
     // receive an error if the plugin attempted to process them
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
-      'main.js': 'main.953f492e.js',
-      'main.css': 'main.953f492e.css',
-      'another.js': 'another.953f492e.js',
-      'another.css': 'another.953f492e.css',
+      'another.css': 'another.828b1bad.css',
+      'another.js': 'another.faa25e07.js',
+      'main.css': 'main.828b1bad.css',
+      'main.js': 'main.faa25e07.js',
       '100.png': '100.871a649c.png',
     });
   });
@@ -356,7 +361,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since index.js does not exist in the asset path, we will receive an error
     // if the plugin attempted to process it
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'index.js': 'index.js',
     });
@@ -374,7 +379,7 @@ describe('TwigAssetWebpackPlugin', () => {
               return ['100.png'];
             },
           },
-          filename: '[name].[hash:8].[ext]',
+          filename: '[name].[contenthash:8].[ext]',
         }),
       ],
     });
@@ -383,7 +388,7 @@ describe('TwigAssetWebpackPlugin', () => {
       filesystem.existsSync(path.join(OUTPUT_PATH, './100.871a649c.png'))
     ).toBe(true);
 
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       '100.png': '100.871a649c.png',
@@ -405,8 +410,9 @@ describe('TwigAssetWebpackPlugin', () => {
         }),
       ],
       output: {
+        publicPath: '',
         path: OUTPUT_PATH,
-        filename: '[name].[hash:8].js',
+        filename: '[name].[contenthash:8].js',
       },
     });
 
@@ -414,9 +420,9 @@ describe('TwigAssetWebpackPlugin', () => {
       filesystem.existsSync(path.join(OUTPUT_PATH, './100.871a649c.png'))
     ).toBe(true);
 
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
-      'main.js': 'main.22f9510a.js',
+      'main.js': 'main.9eef6c1a.js',
       '100.png': '100.871a649c.png',
     });
   });
@@ -436,8 +442,9 @@ describe('TwigAssetWebpackPlugin', () => {
         }),
       ],
       output: {
+        publicPath: '',
         path: OUTPUT_PATH,
-        filename: () => '[name].[hash].js',
+        filename: () => '[name].[contenthash].js',
       },
     });
 
@@ -447,9 +454,9 @@ describe('TwigAssetWebpackPlugin', () => {
       )
     ).toBe(true);
 
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
-      'main.js': 'main.564bc60d89f9acfd0a9b.js',
+      'main.js': 'main.9eef6c1a4c6fcaf2232f.js',
       '100.png': '100.871a649c64f14b1e51f0c9bb61c92b43.png',
     });
   });
@@ -473,8 +480,9 @@ describe('TwigAssetWebpackPlugin', () => {
         }),
       ],
       output: {
+        publicPath: '',
         path: OUTPUT_PATH,
-        filename: '[name].[hash:8].js',
+        filename: '[name].[contenthash:8].js',
       },
     });
 
@@ -490,9 +498,9 @@ describe('TwigAssetWebpackPlugin', () => {
       filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.09921e10.png'))
     ).toBe(true);
 
-    expect(stats.hasErrors()).toEqual(false);
+    expect(stats?.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
-      'main.js': 'main.22f9510a.js',
+      'main.js': 'main.9eef6c1a.js',
       'assets/100.png': 'assets/100.871a649c.png',
       'assets/sub/deeper/deepest/100.png':
         'assets/sub/deeper/deepest/100.871a649c.png',

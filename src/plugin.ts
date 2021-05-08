@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import path from 'path';
-import webpack, { Plugin } from 'webpack';
+import webpack from 'webpack';
 import loaderUtils from 'loader-utils';
 
 import { AssetLocator, AssetLocatorInterface } from './asset-locator';
@@ -18,7 +18,7 @@ type TwigAssetWebpackPluginConfigWithTemplatePath = Partial<TwigAssetWebpackPlug
 type TwigAssetWebpackPluginConfigWithAssetLocator = Partial<TwigAssetWebpackPluginConfig> &
   Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetsPath'>>;
 
-export class TwigAssetWebpackPlugin implements Plugin {
+export class TwigAssetWebpackPlugin {
   private readonly PLUGIN_NAME = 'TwigAssetWebpackPlugin';
 
   private readonly configuration: TwigAssetWebpackPluginConfig;
@@ -47,7 +47,7 @@ export class TwigAssetWebpackPlugin implements Plugin {
 
     compiler.hooks.thisCompilation.tap(this.PLUGIN_NAME, (compilation) => {
       compilation.hooks.chunkAsset.tap(this.PLUGIN_NAME, (chunk) => {
-        chunk._modules.forEach((module) => {
+        compilation.chunkGraph.getChunkModules(chunk).forEach((module) => {
           const moduleWithUserRequest = (module as unknown) as {
             userRequest?: string;
           };
@@ -71,14 +71,18 @@ export class TwigAssetWebpackPlugin implements Plugin {
         });
       });
 
-      compilation.hooks.additionalAssets.tap(this.PLUGIN_NAME, () => {
-        this.addAssetsToCompilation(compilation, assetReferences);
-      });
+      compilation.hooks.processAssets.tap(
+        {
+          name: this.PLUGIN_NAME,
+          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+        },
+        () => this.addAssetsToCompilation(compilation, assetReferences)
+      );
     });
   }
 
   private addAssetsToCompilation(
-    compilation: webpack.compilation.Compilation,
+    compilation: webpack.Compilation,
     assets: string[]
   ): void {
     const { assetsPath } = this.configuration;
@@ -100,14 +104,16 @@ export class TwigAssetWebpackPlugin implements Plugin {
         this.setAssetHandled(requestedAsset, requestedAssetPath);
       } catch (e) {
         compilation.errors.push(
-          new Error(`Failed to add asset "${requestedAsset}", ${e.message}`)
+          new webpack.WebpackError(
+            `Failed to add asset "${requestedAsset}", ${e.message}`
+          )
         );
       }
     });
   }
 
   private addAssetToCompilation(
-    compilation: webpack.compilation.Compilation,
+    compilation: webpack.Compilation,
     requestedAsset: string,
     requestedAssetPath: string
   ): void {
@@ -126,7 +132,7 @@ export class TwigAssetWebpackPlugin implements Plugin {
     const fileContents = fs.readFileSync(requestedAssetPath, null);
 
     const interpolatedFileName = loaderUtils.interpolateName(
-      { resourcePath: requestedAssetPath } as webpack.loader.LoaderContext,
+      { resourcePath: requestedAssetPath },
       interpolationFormat,
       { content: fileContents }
     );
@@ -137,30 +143,21 @@ export class TwigAssetWebpackPlugin implements Plugin {
     const interpolatedFilePath = path.join(requestedPath, interpolatedFileName);
 
     // Add the file to the compilation assets.
-    compilation.assets[interpolatedFilePath] = {
-      source: () => fileContents,
-      size: () => fileContents.length,
-    };
-
-    // Call the hooks to let webpack-manifest-plugin know the user-requested
-    // file name.  Without this it will include the interpolated version as the
-    // manifest key.
-    compilation.hooks.moduleAsset.call(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      { userRequest: requestedAsset },
-      interpolatedFilePath
+    compilation.emitAsset(
+      interpolatedFilePath,
+      new webpack.sources.RawSource(fileContents),
+      { sourceFilename: requestedAsset }
     );
   }
 
   private static getInterpolationFormatFromCompilation(
-    compilation: webpack.compilation.Compilation
+    compilation: webpack.Compilation
   ): string {
     let format = compilation.compiler.options.output?.filename || '[name].js';
 
     if (typeof format === 'function') {
       format = format({
-        chunk: compilation.chunks[0],
+        chunkGraph: compilation.chunkGraph,
       }).replace(/\.[a-z]+$/i, '');
     }
 
