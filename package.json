@@ -4,13 +4,15 @@
   "description": "Webpack plugin to add assets referenced in twig files to the compilation as additional assets.",
   "author": "Erik Perri",
   "license": "MIT",
-  "main": "dist/twig-asset-webpack-plugin.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "build": "babel src --out-dir dist",
-    "build-production": "cross-env BABEL_ENV=production npm run build",
-    "clean": "del-cli dist",
-    "prepare": "npm run clean && npm run build-production"
+    "lint": "eslint src/**/*",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "prepare": "npm run clean && npm run build",
+    "preversion": "npm run prepare && npm run lint && npm run test"
   },
   "engines": {
     "node": ">= 8.9.0"
@@ -19,21 +21,32 @@
     "loader-utils": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.8",
-    "@babel/core": "^7.12.9",
-    "@babel/polyfill": "^7.12.1",
-    "@babel/preset-env": "^7.12.7",
-    "babel-preset-minify": "^0.5.1",
-    "cross-env": "^7.0.2",
-    "del-cli": "^3.0.1",
+    "@tsconfig/node10": "^1.0.7",
+    "@types/jest": "^26.0.23",
+    "@types/loader-utils": "^2.0.2",
+    "@types/memory-fs": "^0.3.3",
+    "@types/mini-css-extract-plugin": "^1.2.2",
+    "@types/node": "^15.0.2",
+    "@types/webpack": "^4.41.28",
+    "@types/webpack-manifest-plugin": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "css-loader": "^5.2.4",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "jest": "^26.6.3",
     "memory-fs": "^0.5.0",
-    "webpack": "^4.44.2",
+    "mini-css-extract-plugin": "^1.3.3",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^26.5.6",
+    "typescript": "^4.2.4",
+    "webpack": "^4.46.0",
     "webpack-manifest-plugin": "^2.2.0"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -43,30 +56,28 @@
     "url": "https://github.com/erik-perri/twig-asset-webpack-plugin/issues"
   },
   "jest": {
-    "testEnvironment": "node"
-  },
-  "babel": {
-    "env": {
-      "development": {
-        "presets": [
-          "@babel/env"
-        ]
-      },
-      "production": {
-        "presets": [
-          "@babel/env",
-          "minify"
-        ]
-      }
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
     }
   },
   "eslintConfig": {
-    "extends": "airbnb",
     "env": {
-      "jest/globals": true
+      "node": true
     },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
     "plugins": [
-      "jest"
+      "@typescript-eslint",
+      "prettier"
     ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
   }
 }
