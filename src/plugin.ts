@@ -53,6 +53,12 @@ export class TwigAssetWebpackPlugin implements Plugin {
           };
 
           if (moduleWithUserRequest.userRequest) {
+            // TODO Handle this better.
+            // In order to ignore the entry point properly we force the asset to
+            // use the chunk name. We do this so when using a string based entry
+            // point ({ entry: './index.js' }), the module name is used instead
+            // of the referenced file (main.js instead of index.js). This may
+            // cause issues if an entry point is also referenced as an asset.
             const moduleFileId = `${chunk.name}${path.extname(
               moduleWithUserRequest.userRequest
             )}`;
