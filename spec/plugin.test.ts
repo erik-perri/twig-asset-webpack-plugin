@@ -326,10 +326,10 @@ describe('TwigAssetWebpackPlugin', () => {
     // receive an error if the plugin attempted to process them
     expect(stats.hasErrors()).toEqual(false);
     expect(readManifest(filesystem)).toEqual({
-      'main.js': 'main.93eb6523.js',
-      'main.css': 'main.93eb6523.css',
-      'another.js': 'another.93eb6523.js',
-      'another.css': 'another.93eb6523.css',
+      'main.js': 'main.953f492e.js',
+      'main.css': 'main.953f492e.css',
+      'another.js': 'another.953f492e.js',
+      'another.css': 'another.953f492e.css',
       '100.png': '100.871a649c.png',
     });
   });
