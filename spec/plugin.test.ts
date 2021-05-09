@@ -291,6 +291,7 @@ describe('TwigAssetWebpackPlugin', () => {
       entry: {
         main: path.join(FIXTURE_PATH, './index-with-css.js'),
         another: path.join(FIXTURE_PATH, './index-with-css.js'),
+        style: path.join(FIXTURE_PATH, './index-with-css.css'),
       },
       output: {
         publicPath: '',
@@ -311,6 +312,7 @@ describe('TwigAssetWebpackPlugin', () => {
                 'main.css',
                 'another.js',
                 'another.css',
+                'style.css',
                 '100.png',
               ];
             },
@@ -335,6 +337,8 @@ describe('TwigAssetWebpackPlugin', () => {
       'another.js': 'another.faa25e07.js',
       'main.css': 'main.828b1bad.css',
       'main.js': 'main.faa25e07.js',
+      'style.css': 'style.828b1bad.css',
+      'style.js': 'style.22514bb9.js',
       '100.png': '100.871a649c.png',
     });
   });
