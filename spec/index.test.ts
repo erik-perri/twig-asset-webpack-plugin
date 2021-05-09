@@ -157,7 +157,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
 
     expect(stats?.compilation.errors).toHaveLength(1);
     expect(stats?.compilation.errors[0].toString()).toContain(
-      'File "111.png" not found at '
+      'Failed to add asset "111.png", asset not found at '
     );
 
     expect(filesystem.existsSync(path.join(OUTPUT_PATH, './100.png'))).toBe(

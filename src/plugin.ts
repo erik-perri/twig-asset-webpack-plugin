@@ -42,7 +42,7 @@ export class TwigAssetWebpackPlugin {
   }
 
   public apply(compiler: webpack.Compiler): void {
-    const { assetLocator } = this.configuration;
+    const { assetLocator, assetPath } = this.configuration;
     const assetReferences = assetLocator.findAssetReferences();
 
     compiler.hooks.thisCompilation.tap(this.PLUGIN_NAME, (compilation) => {
@@ -76,39 +76,40 @@ export class TwigAssetWebpackPlugin {
           name: this.PLUGIN_NAME,
           stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
         },
-        () => this.addAssetsToCompilation(compilation, assetReferences)
+        () => {
+          assetReferences.forEach((requestedAsset) => {
+            if (this.isAssetHandled(requestedAsset)) {
+              return;
+            }
+
+            const requestedAssetPath = path.join(assetPath, requestedAsset);
+            if (!fs.existsSync(requestedAssetPath)) {
+              compilation.errors.push(
+                new webpack.WebpackError(
+                  `Failed to add asset "${requestedAsset}", asset not found at "${requestedAssetPath}"`
+                )
+              );
+              return;
+            }
+
+            try {
+              this.addAssetToCompilation(
+                compilation,
+                requestedAsset,
+                requestedAssetPath
+              );
+
+              this.setAssetHandled(requestedAsset, requestedAssetPath);
+            } catch (e) {
+              compilation.errors.push(
+                new webpack.WebpackError(
+                  `Failed to add asset "${requestedAsset}", ${e.message}`
+                )
+              );
+            }
+          });
+        }
       );
-    });
-  }
-
-  private addAssetsToCompilation(
-    compilation: webpack.Compilation,
-    assets: string[]
-  ): void {
-    const { assetPath } = this.configuration;
-
-    assets.forEach((requestedAsset) => {
-      if (this.isAssetHandled(requestedAsset)) {
-        return;
-      }
-
-      const requestedAssetPath = path.join(assetPath, requestedAsset);
-
-      try {
-        this.addAssetToCompilation(
-          compilation,
-          requestedAsset,
-          requestedAssetPath
-        );
-
-        this.setAssetHandled(requestedAsset, requestedAssetPath);
-      } catch (e) {
-        compilation.errors.push(
-          new webpack.WebpackError(
-            `Failed to add asset "${requestedAsset}", ${e.message}`
-          )
-        );
-      }
     });
   }
 
@@ -117,12 +118,6 @@ export class TwigAssetWebpackPlugin {
     requestedAsset: string,
     requestedAssetPath: string
   ): void {
-    if (!fs.existsSync(requestedAssetPath)) {
-      throw new Error(
-        `File "${requestedAsset}" not found at "${requestedAssetPath}"`
-      );
-    }
-
     // Generate the file name using loader-utils.
     const interpolationFormat =
       this.configuration.filename ||
