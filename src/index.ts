@@ -49,7 +49,7 @@ class TwigAssetWebpackPluginBcWrapper extends TwigAssetWebpackPlugin {
       TwigAssetWebpackPluginConfig,
       'entryPointMatch'
     > = {
-      assetsPath: config.assetPath,
+      assetPath: config.assetPath,
       assetLocator: TwigAssetWebpackPluginBcWrapper.buildAssetLocator(config),
     };
 

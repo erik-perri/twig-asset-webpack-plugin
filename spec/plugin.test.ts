@@ -82,8 +82,8 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
-          templatesPath: path.join(
+          assetPath: path.join(FIXTURE_PATH, './assets'),
+          templatePath: path.join(
             FIXTURE_PATH,
             './asset-locator-quote-variants'
           ),
@@ -111,7 +111,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['100.png', '100.png'];
@@ -139,7 +139,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['100.png', '101.png'];
@@ -174,7 +174,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['main.js'];
@@ -205,7 +205,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['main.js'];
@@ -231,7 +231,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['main.js', 'another.js'];
@@ -260,7 +260,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['main.js', 'another.js'];
@@ -303,7 +303,7 @@ describe('TwigAssetWebpackPlugin', () => {
         }),
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return [
@@ -345,7 +345,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['index.js'];
@@ -373,7 +373,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['100.png'];
@@ -401,7 +401,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['100.png'];
@@ -433,7 +433,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './assets'),
+          assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
             findAssetReferences(): string[] {
               return ['100.png'];
@@ -467,7 +467,7 @@ describe('TwigAssetWebpackPlugin', () => {
       plugins: [
         new WebpackManifestPlugin(),
         new TwigAssetWebpackPlugin({
-          assetsPath: path.join(FIXTURE_PATH, './'),
+          assetPath: path.join(FIXTURE_PATH, './'),
           assetLocator: {
             findAssetReferences(): string[] {
               return [
@@ -516,8 +516,8 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(
       () =>
         new TwigAssetWebpackPlugin({
-          assetsPath: 'exists',
-          templatesPath: 'missing',
+          assetPath: 'exists',
+          templatePath: 'missing',
         })
     ).toThrow(Error);
 
@@ -525,7 +525,7 @@ describe('TwigAssetWebpackPlugin', () => {
       () =>
         new TwigAssetWebpackPlugin({
           // @ts-ignore
-          assetsPath: undefined,
+          assetPath: undefined,
           assetLocator: new AssetLocator('exists'),
         })
     ).toThrow(Error);
@@ -534,7 +534,7 @@ describe('TwigAssetWebpackPlugin', () => {
       () =>
         // @ts-ignore
         new TwigAssetWebpackPlugin({
-          assetsPath: 'exists',
+          assetPath: 'exists',
           assetLocator: undefined,
         })
     ).toThrow(Error);
@@ -542,7 +542,7 @@ describe('TwigAssetWebpackPlugin', () => {
     expect(
       () =>
         new TwigAssetWebpackPlugin({
-          assetsPath: 'missing',
+          assetPath: 'missing',
           assetLocator: new AssetLocator('exists'),
         })
     ).toThrow(Error);
@@ -551,7 +551,7 @@ describe('TwigAssetWebpackPlugin', () => {
       () =>
         new TwigAssetWebpackPlugin({
           filename: '[name].js',
-          assetsPath: 'exists',
+          assetPath: 'exists',
           assetLocator: new AssetLocator('exists'),
         })
     ).toThrow(Error);
@@ -560,7 +560,7 @@ describe('TwigAssetWebpackPlugin', () => {
       () =>
         new TwigAssetWebpackPlugin({
           filename: '[name].[ext]',
-          assetsPath: 'exists',
+          assetPath: 'exists',
           assetLocator: new AssetLocator('exists'),
         })
     ).not.toThrow(Error);

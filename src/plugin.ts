@@ -6,17 +6,17 @@ import loaderUtils from 'loader-utils';
 import { AssetLocator, AssetLocatorInterface } from './asset-locator';
 
 export interface TwigAssetWebpackPluginConfig {
-  assetsPath: string;
-  templatesPath?: string;
+  assetPath: string;
+  templatePath?: string;
   assetLocator: AssetLocatorInterface;
   filename?: string;
 }
 
 type TwigAssetWebpackPluginConfigWithTemplatePath = Partial<TwigAssetWebpackPluginConfig> &
-  Required<Pick<TwigAssetWebpackPluginConfig, 'templatesPath' | 'assetsPath'>>;
+  Required<Pick<TwigAssetWebpackPluginConfig, 'templatePath' | 'assetPath'>>;
 
 type TwigAssetWebpackPluginConfigWithAssetLocator = Partial<TwigAssetWebpackPluginConfig> &
-  Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetsPath'>>;
+  Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetPath'>>;
 
 export class TwigAssetWebpackPlugin {
   private readonly PLUGIN_NAME = 'TwigAssetWebpackPlugin';
@@ -35,7 +35,7 @@ export class TwigAssetWebpackPlugin {
       ...{
         assetLocator: TwigAssetWebpackPlugin.isConfigWithAssetLocator(config)
           ? config.assetLocator
-          : new AssetLocator(config.templatesPath),
+          : new AssetLocator(config.templatePath),
       },
       ...config,
     };
@@ -85,14 +85,14 @@ export class TwigAssetWebpackPlugin {
     compilation: webpack.Compilation,
     assets: string[]
   ): void {
-    const { assetsPath } = this.configuration;
+    const { assetPath } = this.configuration;
 
     assets.forEach((requestedAsset) => {
       if (this.isAssetHandled(requestedAsset)) {
         return;
       }
 
-      const requestedAssetPath = path.join(assetsPath, requestedAsset);
+      const requestedAssetPath = path.join(assetPath, requestedAsset);
 
       try {
         this.addAssetToCompilation(
@@ -193,7 +193,7 @@ export class TwigAssetWebpackPlugin {
       | TwigAssetWebpackPluginConfigWithTemplatePath
       | TwigAssetWebpackPluginConfigWithAssetLocator
   ): void {
-    const { assetLocator, assetsPath, filename, templatesPath } = config;
+    const { assetLocator, assetPath, filename, templatePath } = config;
 
     if (filename && !filename.endsWith('[ext]')) {
       throw new Error(
@@ -203,27 +203,27 @@ export class TwigAssetWebpackPlugin {
       );
     }
 
-    if (!templatesPath && !assetLocator) {
+    if (!templatePath && !assetLocator) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] missing 'templatesPath' or 'assetLocator' configuration`
+        `[${this.PLUGIN_NAME}] missing 'templatePath' or 'assetLocator' configuration`
       );
     }
 
-    if (templatesPath && !fs.existsSync(templatesPath)) {
+    if (templatePath && !fs.existsSync(templatePath)) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] templates path "${templatesPath}" does not exist`
+        `[${this.PLUGIN_NAME}] templates path "${templatePath}" does not exist`
       );
     }
 
-    if (!assetsPath) {
+    if (!assetPath) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] missing 'assetsPath' configuration`
+        `[${this.PLUGIN_NAME}] missing 'assetPath' configuration`
       );
     }
 
-    if (!fs.existsSync(assetsPath)) {
+    if (!fs.existsSync(assetPath)) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] assets path "${assetsPath}" does not exist`
+        `[${this.PLUGIN_NAME}] assets path "${assetPath}" does not exist`
       );
     }
   }
