@@ -134,7 +134,7 @@ export class TwigAssetWebpackPlugin {
 
     // Add the requested path to the generated filename. This is needed so Twig
     // can find the file in manifest.json.
-    const requestedPath = requestedAsset.split('/').slice(0, -1).join('/');
+    const requestedPath = path.dirname(requestedAsset);
     const interpolatedFilePath = path.join(requestedPath, interpolatedFileName);
 
     // Add the file to the compilation assets.
