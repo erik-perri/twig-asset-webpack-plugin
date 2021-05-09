@@ -96,7 +96,7 @@ describe('TwigAssetWebpackPlugin', () => {
       },
     });
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       '100.png': '100.png',
       '120.png': '120.png',
@@ -126,7 +126,7 @@ describe('TwigAssetWebpackPlugin', () => {
       },
     });
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       '100.png': '100.png',
@@ -186,7 +186,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js does not exist in the asset path, we will receive an error
     // if the plugin attempted to process it
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
     });
@@ -217,7 +217,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js does not exist in the asset path, we will receive an error
     // if the plugin attempted to process it
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
     });
@@ -247,7 +247,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js and another.js do not exist in the asset path, we will
     // receive an error if the plugin attempted to process them
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       'another.js': 'another.js',
@@ -278,7 +278,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since main.js and another.js do not exist in the asset path, we will
     // receive an error if the plugin attempted to process them
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       'another.js': 'another.js',
@@ -329,7 +329,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since none of the js/css references exist in the asset path, we will
     // receive an error if the plugin attempted to process them
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'another.css': 'another.828b1bad.css',
       'another.js': 'another.faa25e07.js',
@@ -361,7 +361,7 @@ describe('TwigAssetWebpackPlugin', () => {
 
     // Since index.js does not exist in the asset path, we will receive an error
     // if the plugin attempted to process it
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'index.js': 'index.js',
     });
@@ -388,7 +388,7 @@ describe('TwigAssetWebpackPlugin', () => {
       filesystem.existsSync(path.join(OUTPUT_PATH, './100.871a649c.png'))
     ).toBe(true);
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       '100.png': '100.871a649c.png',
@@ -420,7 +420,7 @@ describe('TwigAssetWebpackPlugin', () => {
       filesystem.existsSync(path.join(OUTPUT_PATH, './100.871a649c.png'))
     ).toBe(true);
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.9eef6c1a.js',
       '100.png': '100.871a649c.png',
@@ -454,7 +454,7 @@ describe('TwigAssetWebpackPlugin', () => {
       )
     ).toBe(true);
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.9eef6c1a4c6fcaf2232f.js',
       '100.png': '100.871a649c64f14b1e51f0c9bb61c92b43.png',
@@ -498,7 +498,7 @@ describe('TwigAssetWebpackPlugin', () => {
       filesystem.existsSync(path.join(OUTPUT_PATH, './assets/120.09921e10.png'))
     ).toBe(true);
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.9eef6c1a.js',
       'assets/100.png': 'assets/100.871a649c.png',

@@ -89,7 +89,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
       ],
     });
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       '120.png': '120.png',
       'main.js': 'main.js',
@@ -113,7 +113,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
       ],
     });
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
     });
@@ -136,7 +136,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
       ],
     });
 
-    expect(stats?.hasErrors()).toEqual(false);
+    expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
       'main.js': 'main.js',
       '100.png': '100.png',
