@@ -46,31 +46,41 @@ export class TwigAssetWebpackPlugin {
     const assetReferences = assetLocator.findAssetReferences();
 
     compiler.hooks.thisCompilation.tap(this.PLUGIN_NAME, (compilation) => {
-      compilation.hooks.chunkAsset.tap(this.PLUGIN_NAME, (chunk) => {
-        compilation.chunkGraph.getChunkModules(chunk).forEach((module) => {
+      // Add a hook to mark the module's files as handled to prevent them from
+      // being processed as assets.
+      compilation.hooks.recordModules.tap(this.PLUGIN_NAME, (modules) => {
+        for (const module of modules) {
+          // We need to determine the module file so we can use
+          // [chunk name].[module file extension] as the expected requested
+          // file.  For example, the entry config { index: 'styles.css' } needs
+          // to have 'index.css' marked as handled.
+          let moduleFile = '';
           const moduleWithUserRequest = (module as unknown) as {
             userRequest?: string;
           };
-
           if (moduleWithUserRequest.userRequest) {
-            // TODO Handle this better.
-            // In order to ignore the entry point properly we force the asset to
-            // use the chunk name. We do this so when using a string based entry
-            // point ({ entry: './index.js' }), the module name is used instead
-            // of the referenced file (main.js instead of index.js). This may
-            // cause issues if an entry point is also referenced as an asset.
-            const moduleFileId = `${chunk.name}${path.extname(
-              moduleWithUserRequest.userRequest
-            )}`;
-
-            this.setAssetHandled(
-              moduleFileId,
-              moduleWithUserRequest.userRequest
-            );
+            moduleFile = moduleWithUserRequest.userRequest;
+          } else {
+            const moduleId = compilation.chunkGraph.getModuleId(module);
+            if (typeof moduleId === 'string') {
+              moduleFile = moduleId;
+            }
           }
-        });
+
+          if (!moduleFile.length) {
+            return;
+          }
+
+          const chunks = compilation.chunkGraph.getModuleChunks(module);
+          chunks.forEach((chunk) => {
+            const chunkOutputFile = `${chunk.name}${path.extname(moduleFile)}`;
+
+            this.setAssetHandled(chunkOutputFile, moduleFile);
+          });
+        }
       });
 
+      // Add a hook to add any unhandled referenced assets to the build.
       compilation.hooks.processAssets.tap(
         {
           name: this.PLUGIN_NAME,
