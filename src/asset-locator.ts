@@ -54,7 +54,7 @@ export class AssetLocator implements AssetLocatorInterface {
           }
         );
       } catch (e) {
-        throw new Error(`${twigFile}: Failed to read file, ${e.message}`);
+        throw new Error(`${twigFile}: Failed to read file, ${e}`);
       }
     });
 

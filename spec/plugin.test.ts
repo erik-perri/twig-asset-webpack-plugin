@@ -9,6 +9,8 @@ import { TwigAssetWebpackPlugin } from '../src/plugin';
 import { AssetLocator } from '../src/asset-locator';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
+jest.setTimeout(10000);
+
 describe('TwigAssetWebpackPlugin', () => {
   const FIXTURE_PATH = path.join(__dirname, './fixtures');
   const OUTPUT_PATH = path.join(__dirname, './webpack-output');
@@ -23,9 +25,7 @@ describe('TwigAssetWebpackPlugin', () => {
     },
   };
 
-  function webpackCompile(
-    webpackOptions: webpack.Configuration
-  ): Promise<{
+  function webpackCompile(webpackOptions: webpack.Configuration): Promise<{
     stats: webpack.Stats | undefined;
     filesystem: MemoryFileSystem;
   }> {
@@ -80,7 +80,7 @@ describe('TwigAssetWebpackPlugin', () => {
       ...WEBPACK_CONFIG,
       mode: 'production',
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           templatePath: path.join(
@@ -109,7 +109,7 @@ describe('TwigAssetWebpackPlugin', () => {
       ...WEBPACK_CONFIG,
       mode: 'production',
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -137,7 +137,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -172,7 +172,7 @@ describe('TwigAssetWebpackPlugin', () => {
       ...WEBPACK_CONFIG,
       entry: path.join(FIXTURE_PATH, './index.js'),
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -203,7 +203,7 @@ describe('TwigAssetWebpackPlugin', () => {
         path.join(FIXTURE_PATH, './another.js'),
       ],
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -229,7 +229,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -258,7 +258,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -302,7 +302,7 @@ describe('TwigAssetWebpackPlugin', () => {
         new MiniCssExtractPlugin({
           filename: '[name].[contenthash:8].css',
         }),
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -333,11 +333,11 @@ describe('TwigAssetWebpackPlugin', () => {
     // receive an error if the plugin attempted to process them
     expect(stats?.compilation.errors).toEqual([]);
     expect(readManifest(filesystem)).toEqual({
-      'another.css': 'another.828b1bad.css',
-      'another.js': 'another.faa25e07.js',
-      'main.css': 'main.828b1bad.css',
-      'main.js': 'main.faa25e07.js',
-      'style.css': 'style.828b1bad.css',
+      'another.css': 'another.198bed88.css',
+      'another.js': 'another.3575a2d4.js',
+      'main.css': 'main.198bed88.css',
+      'main.js': 'main.3575a2d4.js',
+      'style.css': 'style.198bed88.css',
       'style.js': 'style.22514bb9.js',
       '100.png': '100.871a649c.png',
     });
@@ -347,7 +347,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -375,7 +375,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -403,7 +403,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -435,7 +435,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           assetLocator: {
@@ -469,7 +469,7 @@ describe('TwigAssetWebpackPlugin', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './'),
           assetLocator: {

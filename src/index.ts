@@ -45,13 +45,11 @@ class TwigAssetWebpackPluginBcWrapper extends TwigAssetWebpackPlugin {
       );
     }
 
-    const modernConfig: Omit<
-      TwigAssetWebpackPluginConfig,
-      'entryPointMatch'
-    > = {
-      assetPath: config.assetPath,
-      assetLocator: TwigAssetWebpackPluginBcWrapper.buildAssetLocator(config),
-    };
+    const modernConfig: Omit<TwigAssetWebpackPluginConfig, 'entryPointMatch'> =
+      {
+        assetPath: config.assetPath,
+        assetLocator: TwigAssetWebpackPluginBcWrapper.buildAssetLocator(config),
+      };
 
     if (config.filename) {
       modernConfig.filename = config.filename;

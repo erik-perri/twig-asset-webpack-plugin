@@ -7,6 +7,8 @@ import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import TwigAssetWebpackPlugin from '../src';
 
+jest.setTimeout(10000);
+
 describe('TwigAssetWebpackPluginBcWrapper', () => {
   const FIXTURE_PATH = path.join(__dirname, './fixtures');
   const OUTPUT_PATH = path.join(__dirname, './webpack-output');
@@ -21,9 +23,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
     },
   };
 
-  function webpackCompile(
-    webpackOptions: webpack.Configuration
-  ): Promise<{
+  function webpackCompile(webpackOptions: webpack.Configuration): Promise<{
     stats: webpack.Stats | undefined;
     filesystem: MemoryFileSystem;
   }> {
@@ -78,7 +78,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
       ...WEBPACK_CONFIG,
       mode: 'production',
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           templatePath: path.join(FIXTURE_PATH, './asset-locator-custom-match'),
@@ -101,7 +101,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
       ...WEBPACK_CONFIG,
       mode: 'production',
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           templatePath: path.join(
@@ -124,7 +124,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
       ...WEBPACK_CONFIG,
       mode: 'production',
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           templatePath: path.join(
@@ -147,7 +147,7 @@ describe('TwigAssetWebpackPluginBcWrapper', () => {
     const { filesystem, stats } = await webpackCompile({
       ...WEBPACK_CONFIG,
       plugins: [
-        new WebpackManifestPlugin(),
+        new WebpackManifestPlugin({}),
         new TwigAssetWebpackPlugin({
           assetPath: path.join(FIXTURE_PATH, './assets'),
           templatePath: path.join(FIXTURE_PATH, './plugin-missing-asset'),

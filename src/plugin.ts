@@ -12,11 +12,13 @@ export interface TwigAssetWebpackPluginConfig {
   filename?: string;
 }
 
-type TwigAssetWebpackPluginConfigWithTemplatePath = Partial<TwigAssetWebpackPluginConfig> &
-  Required<Pick<TwigAssetWebpackPluginConfig, 'templatePath' | 'assetPath'>>;
+type TwigAssetWebpackPluginConfigWithTemplatePath =
+  Partial<TwigAssetWebpackPluginConfig> &
+    Required<Pick<TwigAssetWebpackPluginConfig, 'templatePath' | 'assetPath'>>;
 
-type TwigAssetWebpackPluginConfigWithAssetLocator = Partial<TwigAssetWebpackPluginConfig> &
-  Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetPath'>>;
+type TwigAssetWebpackPluginConfigWithAssetLocator =
+  Partial<TwigAssetWebpackPluginConfig> &
+    Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetPath'>>;
 
 export class TwigAssetWebpackPlugin {
   private readonly PLUGIN_NAME = 'TwigAssetWebpackPlugin';
@@ -55,7 +57,7 @@ export class TwigAssetWebpackPlugin {
           // file.  For example, the entry config { index: 'styles.css' } needs
           // to have 'index.css' marked as handled.
           let moduleFile = '';
-          const moduleWithUserRequest = (module as unknown) as {
+          const moduleWithUserRequest = module as unknown as {
             userRequest?: string;
           };
           if (moduleWithUserRequest.userRequest) {
@@ -113,7 +115,7 @@ export class TwigAssetWebpackPlugin {
             } catch (e) {
               compilation.errors.push(
                 new webpack.WebpackError(
-                  `Failed to add asset "${requestedAsset}", ${e.message}`
+                  `Failed to add asset "${requestedAsset}", ${e}`
                 )
               );
             }
