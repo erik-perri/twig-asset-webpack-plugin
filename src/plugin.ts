@@ -1,24 +1,26 @@
 import * as fs from 'fs';
 import path from 'path';
-import webpack, { Plugin } from 'webpack';
+import webpack from 'webpack';
 import loaderUtils from 'loader-utils';
 
 import { AssetLocator, AssetLocatorInterface } from './asset-locator';
 
 export interface TwigAssetWebpackPluginConfig {
-  assetsPath: string;
-  templatesPath?: string;
+  assetPath: string;
+  templatePath?: string;
   assetLocator: AssetLocatorInterface;
   filename?: string;
 }
 
-type TwigAssetWebpackPluginConfigWithTemplatePath = Partial<TwigAssetWebpackPluginConfig> &
-  Required<Pick<TwigAssetWebpackPluginConfig, 'templatesPath' | 'assetsPath'>>;
+type TwigAssetWebpackPluginConfigWithTemplatePath =
+  Partial<TwigAssetWebpackPluginConfig> &
+    Required<Pick<TwigAssetWebpackPluginConfig, 'templatePath' | 'assetPath'>>;
 
-type TwigAssetWebpackPluginConfigWithAssetLocator = Partial<TwigAssetWebpackPluginConfig> &
-  Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetsPath'>>;
+type TwigAssetWebpackPluginConfigWithAssetLocator =
+  Partial<TwigAssetWebpackPluginConfig> &
+    Required<Pick<TwigAssetWebpackPluginConfig, 'assetLocator' | 'assetPath'>>;
 
-export class TwigAssetWebpackPlugin implements Plugin {
+export class TwigAssetWebpackPlugin {
   private readonly PLUGIN_NAME = 'TwigAssetWebpackPlugin';
 
   private readonly configuration: TwigAssetWebpackPluginConfig;
@@ -35,88 +37,99 @@ export class TwigAssetWebpackPlugin implements Plugin {
       ...{
         assetLocator: TwigAssetWebpackPlugin.isConfigWithAssetLocator(config)
           ? config.assetLocator
-          : new AssetLocator(config.templatesPath),
+          : new AssetLocator(config.templatePath),
       },
       ...config,
     };
   }
 
   public apply(compiler: webpack.Compiler): void {
-    const { assetLocator } = this.configuration;
+    const { assetLocator, assetPath } = this.configuration;
     const assetReferences = assetLocator.findAssetReferences();
 
     compiler.hooks.thisCompilation.tap(this.PLUGIN_NAME, (compilation) => {
-      compilation.hooks.chunkAsset.tap(this.PLUGIN_NAME, (chunk) => {
-        chunk._modules.forEach((module) => {
-          const moduleWithUserRequest = (module as unknown) as {
+      // Add a hook to mark the module's files as handled to prevent them from
+      // being processed as assets.
+      compilation.hooks.recordModules.tap(this.PLUGIN_NAME, (modules) => {
+        for (const module of modules) {
+          // We need to determine the module file so we can use
+          // [chunk name].[module file extension] as the expected requested
+          // file.  For example, the entry config { index: 'styles.css' } needs
+          // to have 'index.css' marked as handled.
+          let moduleFile = '';
+          const moduleWithUserRequest = module as unknown as {
             userRequest?: string;
           };
-
           if (moduleWithUserRequest.userRequest) {
-            // TODO Handle this better.
-            // In order to ignore the entry point properly we force the asset to
-            // use the chunk name. We do this so when using a string based entry
-            // point ({ entry: './index.js' }), the module name is used instead
-            // of the referenced file (main.js instead of index.js). This may
-            // cause issues if an entry point is also referenced as an asset.
-            const moduleFileId = `${chunk.name}${path.extname(
-              moduleWithUserRequest.userRequest
-            )}`;
-
-            this.setAssetHandled(
-              moduleFileId,
-              moduleWithUserRequest.userRequest
-            );
+            moduleFile = moduleWithUserRequest.userRequest;
+          } else {
+            const moduleId = compilation.chunkGraph.getModuleId(module);
+            if (typeof moduleId === 'string') {
+              moduleFile = moduleId;
+            }
           }
-        });
+
+          if (!moduleFile.length) {
+            return;
+          }
+
+          const chunks = compilation.chunkGraph.getModuleChunks(module);
+          chunks.forEach((chunk) => {
+            const chunkOutputFile = `${chunk.name}${path.extname(moduleFile)}`;
+
+            this.setAssetHandled(chunkOutputFile, moduleFile);
+          });
+        }
       });
 
-      compilation.hooks.additionalAssets.tap(this.PLUGIN_NAME, () => {
-        this.addAssetsToCompilation(compilation, assetReferences);
-      });
-    });
-  }
+      // Add a hook to add any unhandled referenced assets to the build.
+      compilation.hooks.processAssets.tap(
+        {
+          name: this.PLUGIN_NAME,
+          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+        },
+        () => {
+          assetReferences.forEach((requestedAsset) => {
+            if (this.isAssetHandled(requestedAsset)) {
+              return;
+            }
 
-  private addAssetsToCompilation(
-    compilation: webpack.compilation.Compilation,
-    assets: string[]
-  ): void {
-    const { assetsPath } = this.configuration;
+            const requestedAssetPath = path.join(assetPath, requestedAsset);
+            if (!fs.existsSync(requestedAssetPath)) {
+              compilation.errors.push(
+                new webpack.WebpackError(
+                  `Failed to add asset "${requestedAsset}", asset not found at "${requestedAssetPath}"`
+                )
+              );
+              return;
+            }
 
-    assets.forEach((requestedAsset) => {
-      if (this.isAssetHandled(requestedAsset)) {
-        return;
-      }
+            try {
+              this.addAssetToCompilation(
+                compilation,
+                requestedAsset,
+                requestedAssetPath
+              );
 
-      const requestedAssetPath = path.join(assetsPath, requestedAsset);
-
-      try {
-        this.addAssetToCompilation(
-          compilation,
-          requestedAsset,
-          requestedAssetPath
-        );
-
-        this.setAssetHandled(requestedAsset, requestedAssetPath);
-      } catch (e) {
-        compilation.errors.push(
-          new Error(`Failed to add asset "${requestedAsset}", ${e.message}`)
-        );
-      }
+              this.setAssetHandled(requestedAsset, requestedAssetPath);
+            } catch (e) {
+              compilation.errors.push(
+                new webpack.WebpackError(
+                  `Failed to add asset "${requestedAsset}", ${e}`
+                )
+              );
+            }
+          });
+        }
+      );
     });
   }
 
   private addAssetToCompilation(
-    compilation: webpack.compilation.Compilation,
+    compilation: webpack.Compilation,
     requestedAsset: string,
     requestedAssetPath: string
   ): void {
-    if (!fs.existsSync(requestedAssetPath)) {
-      throw new Error(
-        `File "${requestedAsset}" not found at "${requestedAssetPath}"`
-      );
-    }
-
     // Generate the file name using loader-utils.
     const interpolationFormat =
       this.configuration.filename ||
@@ -126,41 +139,32 @@ export class TwigAssetWebpackPlugin implements Plugin {
     const fileContents = fs.readFileSync(requestedAssetPath, null);
 
     const interpolatedFileName = loaderUtils.interpolateName(
-      { resourcePath: requestedAssetPath } as webpack.loader.LoaderContext,
+      { resourcePath: requestedAssetPath },
       interpolationFormat,
       { content: fileContents }
     );
 
     // Add the requested path to the generated filename. This is needed so Twig
     // can find the file in manifest.json.
-    const requestedPath = requestedAsset.split('/').slice(0, -1).join('/');
+    const requestedPath = path.dirname(requestedAsset);
     const interpolatedFilePath = path.join(requestedPath, interpolatedFileName);
 
     // Add the file to the compilation assets.
-    compilation.assets[interpolatedFilePath] = {
-      source: () => fileContents,
-      size: () => fileContents.length,
-    };
-
-    // Call the hooks to let webpack-manifest-plugin know the user-requested
-    // file name.  Without this it will include the interpolated version as the
-    // manifest key.
-    compilation.hooks.moduleAsset.call(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      { userRequest: requestedAsset },
-      interpolatedFilePath
+    compilation.emitAsset(
+      interpolatedFilePath,
+      new webpack.sources.RawSource(fileContents),
+      { sourceFilename: requestedAsset }
     );
   }
 
   private static getInterpolationFormatFromCompilation(
-    compilation: webpack.compilation.Compilation
+    compilation: webpack.Compilation
   ): string {
     let format = compilation.compiler.options.output?.filename || '[name].js';
 
     if (typeof format === 'function') {
       format = format({
-        chunk: compilation.chunks[0],
+        chunkGraph: compilation.chunkGraph,
       }).replace(/\.[a-z]+$/i, '');
     }
 
@@ -196,7 +200,7 @@ export class TwigAssetWebpackPlugin implements Plugin {
       | TwigAssetWebpackPluginConfigWithTemplatePath
       | TwigAssetWebpackPluginConfigWithAssetLocator
   ): void {
-    const { assetLocator, assetsPath, filename, templatesPath } = config;
+    const { assetLocator, assetPath, filename, templatePath } = config;
 
     if (filename && !filename.endsWith('[ext]')) {
       throw new Error(
@@ -206,27 +210,27 @@ export class TwigAssetWebpackPlugin implements Plugin {
       );
     }
 
-    if (!templatesPath && !assetLocator) {
+    if (!templatePath && !assetLocator) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] missing 'templatesPath' or 'assetLocator' configuration`
+        `[${this.PLUGIN_NAME}] missing 'templatePath' or 'assetLocator' configuration`
       );
     }
 
-    if (templatesPath && !fs.existsSync(templatesPath)) {
+    if (templatePath && !fs.existsSync(templatePath)) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] templates path "${templatesPath}" does not exist`
+        `[${this.PLUGIN_NAME}] templates path "${templatePath}" does not exist`
       );
     }
 
-    if (!assetsPath) {
+    if (!assetPath) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] missing 'assetsPath' configuration`
+        `[${this.PLUGIN_NAME}] missing 'assetPath' configuration`
       );
     }
 
-    if (!fs.existsSync(assetsPath)) {
+    if (!fs.existsSync(assetPath)) {
       throw new Error(
-        `[${this.PLUGIN_NAME}] assets path "${assetsPath}" does not exist`
+        `[${this.PLUGIN_NAME}] assets path "${assetPath}" does not exist`
       );
     }
   }
