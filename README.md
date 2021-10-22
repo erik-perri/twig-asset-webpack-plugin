@@ -1,7 +1,7 @@
 # Twig Asset Webpack Plugin  [![CI](https://github.com/erik-perri/twig-asset-webpack-plugin/workflows/CI/badge.svg)](https://github.com/erik-perri/twig-asset-webpack-plugin/actions?query=workflow%3ACI)
 
 
-Webpack plugin to add assets referenced in Twig files to the compilation. This puts them in the generated manifest, so
+Webpack 5 plugin to add assets referenced in Twig files to the compilation. This puts them in the generated manifest, so
 they are available when Twig looks for them.
 
 For example, if it comes across `<img src="{{ asset('images/test.png') }}" />` in a Twig file (assuming the
